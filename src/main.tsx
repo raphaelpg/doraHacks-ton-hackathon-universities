@@ -3,12 +3,10 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
-
-// this manifest is used temporarily for development purposes
-const manifestUrl = 'https://raphaelpg.github.io/doraHacks-ton-hackathon-universities/tonconnect-manifest.json';
+import { URL_MANIFEST } from './settings/constants';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <TonConnectUIProvider manifestUrl={manifestUrl}>
+  <TonConnectUIProvider manifestUrl={URL_MANIFEST}>
     <App />
   </TonConnectUIProvider>,
 )

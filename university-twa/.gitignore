@@ -11,10 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-university-twa/node_modules
-university-twa/dist
-university-contracts/node_modules
-university-contracts/dist
 
 # Editor directories and files
 .vscode/*

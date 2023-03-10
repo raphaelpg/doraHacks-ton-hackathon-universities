@@ -1,6 +1,10 @@
 #include "imports/stdlib.fc";
 
 const op::increase = "op::increase"c; ;; create an opcode from string using the "c" prefix, this results in 0x7e8764ef opcode in this case
+const op::transfer_ownership = 0x2da38aaf;
+;; const op::create_collection = "op::create_collection"c;
+
+const error::access_denied = 102;
 
 ;; storage variables
 
@@ -10,6 +14,7 @@ global int ctx_id;
 global int ctx_counter;
 global int age;
 global slice owner_address;
+;; global slice last_sender_address;
 
 ;; load_data populates storage variables using stored data
 () load_data() impure {
@@ -19,6 +24,7 @@ global slice owner_address;
     ctx_counter = ds~load_uint(32);
     age = ds~load_uint(32);
     owner_address = ds~load_msg_addr();
+    ;; last_sender_address = ds~load_msg_addr();
 
     ds.end_parse();
 }
@@ -31,6 +37,7 @@ global slice owner_address;
             .store_uint(ctx_counter, 32)
             .store_uint(age, 32)
             .store_slice(owner_address)
+            ;; .store_slice(last_sender_address)
             .end_cell()
     );
 }
@@ -43,6 +50,9 @@ global slice owner_address;
 
     slice cs = in_msg_full.begin_parse();
     int flags = cs~load_uint(4);
+    slice sender_address = cs~load_msg_addr();
+    ;; last_sender_address = sender_address;
+
     if (flags & 1) { ;; ignore all bounced messages
         return ();
     }
@@ -58,6 +68,19 @@ global slice owner_address;
         save_data();
         return ();
     }
+
+    if (op == op::transfer_ownership) {
+        throw_unless(error::access_denied, equal_slices(sender_address, owner_address));
+        owner_address = in_msg_body~load_msg_addr();
+        save_data();
+        return ();
+    }
+
+    ;; if (op == op::create_collection) {
+    ;;     last_sender_address = in_msg_body~load_msg_addr();
+    ;;     save_data();
+    ;;     return ();
+    ;; }
 
     throw(0xffff); ;; if the message contains an op that is not known to this contract, we throw
 }
@@ -85,3 +108,8 @@ slice get_owner_address() method_id {
     load_data();
     return owner_address;
 }
+
+;; slice get_last_sender_address() method_id {
+;;     load_data();
+;;     return last_sender_address;
+;; }

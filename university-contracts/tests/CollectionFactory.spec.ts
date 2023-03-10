@@ -14,12 +14,13 @@ describe('CollectionFactory', () => {
 
     let blockchain: Blockchain;
     let collectionFactory: SandboxContract<CollectionFactory>;
-
+    let deployerAddress: Address;
     beforeEach(async () => {
         blockchain = await Blockchain.create();
 
         const deployer = await blockchain.treasury('deployer');
-        
+        deployerAddress = deployer.address;
+
         collectionFactory = blockchain.openContract(
             CollectionFactory.createFromConfig(
                 {
@@ -53,6 +54,13 @@ describe('CollectionFactory', () => {
 
         expect(initalAge).toBe(42);
     });
+
+    // it('should retrieve last sender address', async () => {
+    //     const lastSender = await collectionFactory.getLastSender();
+
+    //     console.log({lastSender})
+    //     console.log({"sender address": deployerAddress})
+    // })
 
     it('should increase counter', async () => {
         const increaseTimes = 3;

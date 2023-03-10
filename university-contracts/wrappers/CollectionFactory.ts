@@ -18,6 +18,7 @@ export function collectionFactoryConfigToCell(config: CollectionFactoryConfig): 
 
 export const Opcodes = {
     increase: 0x7e8764ef,
+    transfer_ownership: 0x2da38aaf,
 };
 
 export class CollectionFactory implements Contract {
@@ -61,6 +62,27 @@ export class CollectionFactory implements Contract {
         });
     }
 
+    
+    async transferOwnership(
+        provider: ContractProvider, 
+        via: Sender, 
+        opts: {
+            newOwnerAddress: Address;
+            value: bigint;
+            queryID?: number;
+        }
+    ) {
+        await provider.internal(via, {
+            value: opts.value,
+            sendMode: SendMode.PAY_GAS_SEPARATELY,
+            body: beginCell()
+                .storeUint(Opcodes.transfer_ownership, 32)
+                .storeUint(opts.queryID ?? 0, 64)
+                .storeAddress(opts.newOwnerAddress)
+                .endCell(),
+        });
+    }
+
     async getCounter(provider: ContractProvider) {
         const result = await provider.get('get_counter', []);
         return result.stack.readNumber();
@@ -78,6 +100,11 @@ export class CollectionFactory implements Contract {
 
     async getOwner(provider: ContractProvider) {
         const result = await provider.get('get_owner_address', []);
+        return result.stack.readAddress();
+    }
+
+    async getLastSender(provider: ContractProvider) {
+        const result = await provider.get('get_last_sender_address', []);
         return result.stack.readAddress();
     }
 }

@@ -22,6 +22,7 @@ describe('CollectionFactory', () => {
                 {
                     id: 0,
                     counter: 0,
+                    age: 36,
                 },
                 code
             )
@@ -41,6 +42,14 @@ describe('CollectionFactory', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and collectionFactory are ready to use
+    });
+
+    it('should retrieve age', async () => {
+        const initalAge = await collectionFactory.getAge();
+
+        console.log('initial age', initalAge);
+
+        expect(initalAge).toBe(36);
     });
 
     it('should increase counter', async () => {

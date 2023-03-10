@@ -8,6 +8,7 @@ const op::increase = "op::increase"c; ;; create an opcode from string using the 
 ;; since addresses in TON depend on the initial state of the contract
 global int ctx_id;
 global int ctx_counter;
+global int age;
 
 ;; load_data populates storage variables using stored data
 () load_data() impure {
@@ -15,6 +16,7 @@ global int ctx_counter;
 
     ctx_id = ds~load_uint(32);
     ctx_counter = ds~load_uint(32);
+    age = ds~load_uint(32);
 
     ds.end_parse();
 }
@@ -25,6 +27,7 @@ global int ctx_counter;
         begin_cell()
             .store_uint(ctx_id, 32)
             .store_uint(ctx_counter, 32)
+            .store_uint(age, 32)
             .end_cell()
     );
 }
@@ -68,4 +71,9 @@ int get_counter() method_id {
 int get_id() method_id {
     load_data();
     return ctx_id;
+}
+
+int get_age() method_id {
+    load_data();
+    return age;
 }

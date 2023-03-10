@@ -3,10 +3,15 @@ import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, 
 export type CollectionFactoryConfig = {
     id: number;
     counter: number;
+    age: number;
 };
 
 export function collectionFactoryConfigToCell(config: CollectionFactoryConfig): Cell {
-    return beginCell().storeUint(config.id, 32).storeUint(config.counter, 32).endCell();
+    return beginCell()
+        .storeUint(config.id, 32)
+        .storeUint(config.counter, 32)
+        .storeUint(config.age, 32)
+        .endCell();
 }
 
 export const Opcodes = {
@@ -61,6 +66,11 @@ export class CollectionFactory implements Contract {
 
     async getID(provider: ContractProvider) {
         const result = await provider.get('get_id', []);
+        return result.stack.readNumber();
+    }
+
+    async getAge(provider: ContractProvider) {
+        const result = await provider.get('get_age', []);
         return result.stack.readNumber();
     }
 }

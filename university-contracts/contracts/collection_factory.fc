@@ -112,6 +112,5 @@ slice get_owner_address() method_id {
 
 slice get_last_sender_address() method_id {
     load_data();
-    ;; return last_sender_address;
-    return owner_address;
+    return last_sender_address;
 }

@@ -56,11 +56,12 @@ describe('CollectionFactory', () => {
         expect(initalAge).toBe(42);
     });
 
-    it('should retrieve last sender address', async () => {
+    it('should retrieve last sender address and it should be the deployer', async () => {
         const lastSender = await collectionFactory.getLastSender();
 
         console.log({lastSender})
-        console.log({"sender address": deployerAddress})
+        console.log({deployerAddress})
+        expect(lastSender.equals(deployerAddress)).toEqual(true);
     })
 
     it('should increase counter', async () => {
@@ -95,5 +96,23 @@ describe('CollectionFactory', () => {
 
             expect(counterAfter).toBe(counterBefore + increaseBy);
         }
+    });
+
+    it('should change last sender', async () => {
+        const newSender = await blockchain.treasury('newSender');
+
+        const lastSenderBefore = await collectionFactory.getLastSender();
+
+        console.log('lastSenderBefore', lastSenderBefore);
+
+        await collectionFactory.sendCreateCollection(newSender.getSender(), {
+            value: toNano('0.05'),
+        });
+
+        const lastSenderAfter = await collectionFactory.getLastSender();
+
+        console.log('lastSenderAfter', lastSenderAfter);
+
+        expect(lastSenderBefore.equals(lastSenderAfter)).toEqual(false);
     });
 });

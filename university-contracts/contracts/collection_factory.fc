@@ -2,7 +2,7 @@
 
 const op::increase = "op::increase"c; ;; create an opcode from string using the "c" prefix, this results in 0x7e8764ef opcode in this case
 const op::transfer_ownership = 0x2da38aaf;
-;; const op::create_collection = "op::create_collection"c;
+const op::create_collection = 42;
 
 const error::access_denied = 102;
 
@@ -52,7 +52,6 @@ global slice last_sender_address;
     slice cs = in_msg_full.begin_parse();
     int flags = cs~load_uint(4);
     slice sender_address = cs~load_msg_addr();
-    ;; last_sender_address = sender_address;
 
     if (flags & 1) { ;; ignore all bounced messages
         return ();
@@ -77,11 +76,12 @@ global slice last_sender_address;
         return ();
     }
 
-    ;; if (op == op::create_collection) {
-    ;;     last_sender_address = in_msg_body~load_msg_addr();
-    ;;     save_data();
-    ;;     return ();
-    ;; }
+    if (op == op::create_collection) {
+        ;; last_sender_address = in_msg_body~load_msg_addr();
+        last_sender_address = sender_address;
+        save_data();
+        return ();
+    }
 
     throw(0xffff); ;; if the message contains an op that is not known to this contract, we throw
 }

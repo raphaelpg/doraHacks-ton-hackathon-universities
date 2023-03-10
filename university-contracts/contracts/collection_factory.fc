@@ -14,7 +14,7 @@ global int ctx_id;
 global int ctx_counter;
 global int age;
 global slice owner_address;
-;; global slice last_sender_address;
+global slice last_sender_address;
 
 ;; load_data populates storage variables using stored data
 () load_data() impure {
@@ -24,7 +24,8 @@ global slice owner_address;
     ctx_counter = ds~load_uint(32);
     age = ds~load_uint(32);
     owner_address = ds~load_msg_addr();
-    ;; last_sender_address = ds~load_msg_addr();
+    last_sender_address = ds~load_msg_addr();
+    ;; last_sender_address = owner_address;
 
     ds.end_parse();
 }
@@ -37,7 +38,7 @@ global slice owner_address;
             .store_uint(ctx_counter, 32)
             .store_uint(age, 32)
             .store_slice(owner_address)
-            ;; .store_slice(last_sender_address)
+            .store_slice(last_sender_address)
             .end_cell()
     );
 }
@@ -109,7 +110,8 @@ slice get_owner_address() method_id {
     return owner_address;
 }
 
-;; slice get_last_sender_address() method_id {
-;;     load_data();
-;;     return last_sender_address;
-;; }
+slice get_last_sender_address() method_id {
+    load_data();
+    ;; return last_sender_address;
+    return owner_address;
+}

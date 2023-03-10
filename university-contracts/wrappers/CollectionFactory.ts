@@ -5,6 +5,7 @@ export type CollectionFactoryConfig = {
     counter: number;
     age: number;
     owner_address: Address;
+    last_sender_address: Address;
 };
 
 export function collectionFactoryConfigToCell(config: CollectionFactoryConfig): Cell {
@@ -13,6 +14,7 @@ export function collectionFactoryConfigToCell(config: CollectionFactoryConfig): 
         .storeUint(config.counter, 32)
         .storeUint(config.age, 32)
         .storeAddress(config.owner_address)
+        .storeAddress(config.last_sender_address)
         .endCell();
 }
 

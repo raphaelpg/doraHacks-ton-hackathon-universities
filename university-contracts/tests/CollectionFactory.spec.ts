@@ -28,6 +28,7 @@ describe('CollectionFactory', () => {
                     counter: 0,
                     age: 42,
                     owner_address: deployer.address,
+                    last_sender_address: deployer.address,
                 },
                 code
             )
@@ -55,12 +56,12 @@ describe('CollectionFactory', () => {
         expect(initalAge).toBe(42);
     });
 
-    // it('should retrieve last sender address', async () => {
-    //     const lastSender = await collectionFactory.getLastSender();
+    it('should retrieve last sender address', async () => {
+        const lastSender = await collectionFactory.getLastSender();
 
-    //     console.log({lastSender})
-    //     console.log({"sender address": deployerAddress})
-    // })
+        console.log({lastSender})
+        console.log({"sender address": deployerAddress})
+    })
 
     it('should increase counter', async () => {
         const increaseTimes = 3;

@@ -28,6 +28,7 @@ describe('CollectionFactory', () => {
                     counter: 0,
                     age: 42,
                     owner_address: deployerAddress,
+                    last_sender_address: deployerAddress,
                 },
                 code
             )

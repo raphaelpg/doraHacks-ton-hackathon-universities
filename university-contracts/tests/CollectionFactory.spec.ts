@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import { Address, Cell, toNano } from 'ton-core';
 import { CollectionFactory } from '../wrappers/CollectionFactory';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -18,19 +18,19 @@ describe('CollectionFactory', () => {
     beforeEach(async () => {
         blockchain = await Blockchain.create();
 
+        const deployer = await blockchain.treasury('deployer');
+        
         collectionFactory = blockchain.openContract(
             CollectionFactory.createFromConfig(
                 {
                     id: 0,
                     counter: 0,
                     age: 42,
-                    owner_address: randomAddress("owner"),
+                    owner_address: deployer.address,
                 },
                 code
             )
         );
-
-        const deployer = await blockchain.treasury('deployer');
 
         const deployResult = await collectionFactory.sendDeploy(deployer.getSender(), toNano('0.05'));
 
@@ -49,17 +49,10 @@ describe('CollectionFactory', () => {
     it('should retrieve age', async () => {
         const initalAge = await collectionFactory.getAge();
 
-        console.log('initial age', initalAge);
+        console.log({initalAge});
 
         expect(initalAge).toBe(42);
     });
-
-    it('should retrieve owner address', async () => {
-        // const call = await collectionFactory.invokeGetMethod("owner_address", []);
-        const owner = await collectionFactory.getOwner();
-
-        console.log({owner})
-    })
 
     it('should increase counter', async () => {
         const increaseTimes = 3;

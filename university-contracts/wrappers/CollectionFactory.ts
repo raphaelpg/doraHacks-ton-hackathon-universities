@@ -84,7 +84,7 @@ export class CollectionFactory implements Contract {
     }
 
     
-    async transferOwnership(
+    async sendtransferOwnership(
         provider: ContractProvider, 
         via: Sender, 
         opts: {

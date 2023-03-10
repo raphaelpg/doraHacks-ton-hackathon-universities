@@ -54,6 +54,13 @@ describe('CollectionFactory', () => {
         expect(initalAge).toBe(42);
     });
 
+    it('should retrieve owner address', async () => {
+        // const call = await collectionFactory.invokeGetMethod("owner_address", []);
+        const owner = await collectionFactory.getOwner();
+
+        console.log({owner})
+    })
+
     it('should increase counter', async () => {
         const increaseTimes = 3;
         for (let i = 0; i < increaseTimes; i++) {

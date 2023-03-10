@@ -75,4 +75,9 @@ export class CollectionFactory implements Contract {
         const result = await provider.get('get_age', []);
         return result.stack.readNumber();
     }
+
+    async getOwner(provider: ContractProvider) {
+        const result = await provider.get('get_owner_address', []);
+        return result.stack.readAddress();
+    }
 }

@@ -3,6 +3,7 @@ import { Cell, toNano } from 'ton-core';
 import { CollectionFactory } from '../wrappers/CollectionFactory';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
+import { randomAddress } from './helpers';
 
 describe('CollectionFactory', () => {
     let code: Cell;
@@ -22,7 +23,8 @@ describe('CollectionFactory', () => {
                 {
                     id: 0,
                     counter: 0,
-                    age: 36,
+                    age: 42,
+                    owner_address: randomAddress("owner"),
                 },
                 code
             )
@@ -49,7 +51,7 @@ describe('CollectionFactory', () => {
 
         console.log('initial age', initalAge);
 
-        expect(initalAge).toBe(36);
+        expect(initalAge).toBe(42);
     });
 
     it('should increase counter', async () => {

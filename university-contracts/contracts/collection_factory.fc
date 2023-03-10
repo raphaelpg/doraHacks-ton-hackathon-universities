@@ -9,6 +9,7 @@ const op::increase = "op::increase"c; ;; create an opcode from string using the 
 global int ctx_id;
 global int ctx_counter;
 global int age;
+global slice owner_address;
 
 ;; load_data populates storage variables using stored data
 () load_data() impure {
@@ -17,6 +18,7 @@ global int age;
     ctx_id = ds~load_uint(32);
     ctx_counter = ds~load_uint(32);
     age = ds~load_uint(32);
+    owner_address = ds~load_msg_addr();
 
     ds.end_parse();
 }
@@ -28,6 +30,7 @@ global int age;
             .store_uint(ctx_id, 32)
             .store_uint(ctx_counter, 32)
             .store_uint(age, 32)
+            .store_slice(owner_address)
             .end_cell()
     );
 }
@@ -76,4 +79,9 @@ int get_id() method_id {
 int get_age() method_id {
     load_data();
     return age;
+}
+
+slice get_owner_address() method_id {
+    load_data();
+    return owner_address;
 }

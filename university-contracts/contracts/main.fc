@@ -65,7 +65,10 @@ global cell collections;
         last_sender_address = sender_address;
         ;; collections~udict_set(dict,key_len,index,value)
         cell dic = new_dict();
-        dic~dict_set(256, sender_address, owner_address);
+        (int wchain, int address_A) = parse_std_addr(sender_address);
+        ;; int address_B = parse_std_addr(owner_address);
+        ;; dic~dict_set(256, sender_address, owner_address);
+        dic~udict_set(256, address_A, owner_address);
         collections = dic;
         save_data();
         return ();
@@ -94,10 +97,12 @@ slice get_wallet_factory_address(slice wallet_address) method_id {
     ;; if (collections.dict_empty?()) {
     ;;     throw(0xffff);
     ;; };
-    slice res = wallet_address;
-    var factories = collections.begin_parse();
-    slice inner_address = factories~load_msg_addr(); ;; load cell from slice msg
-    
+    ;; slice res = wallet_address;
+    (int wchain, int address_A) = parse_std_addr(wallet_address);
+    ;; var factories = collections.begin_parse();
+    (slice payload, int success) = collections.udict_get?(256, address_A); ;; load cell from slice msg
+    throw_unless(98, success);
+    slice res = payload~load_msg_addr();    
     ;; while (factories.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
     ;;     slice inner_address = factories~load_msg_addr(); ;; load cell from slice msg
     ;;     if (inner_address.slice_hash() == wallet_address.slice_hash()) {

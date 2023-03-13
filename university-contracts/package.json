@@ -3,7 +3,8 @@
     "version": "0.0.1",
     "license": "MIT",
     "scripts": {
-        "test": "jest"
+        "test": "jest",
+        "testMain": "jest Main.spec.ts"
     },
     "devDependencies": {
         "@ton-community/blueprint": "^0.4.1",

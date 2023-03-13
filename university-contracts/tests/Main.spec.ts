@@ -81,12 +81,12 @@ describe('Main', () => {
     });
 
     it("should retrieve user's factory", async () => {
-        const newSender = await blockchain.treasury('newSender');
+        const newSender = await blockchain.treasury('newUser');
         await main.sendCreateCollection(newSender.getSender(), {
             value: toNano('0.05'),
         });
 
-        const userFactory = await main.getWalletFactoryAddress();
+        const userFactory = await main.getWalletFactoryAddress(newSender.address);
 
         console.log({userFactory})
         // console.log({deployerAddress})

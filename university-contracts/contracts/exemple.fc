@@ -1,0 +1,31 @@
+global cell collections;
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+  slice sender_address = cs~load_msg_addr();
+  if (op == op::create_collection) {
+      last_sender_address = sender_address;
+      cell dic = new_dict();
+      dic~dict_set(256, sender_address, owner_address); ;;addresses for test purposes
+      collections = dic;
+      save_data();
+      return ();
+  }
+}
+
+slice get_wallet_factory_address(slice wallet_address) method_id {
+    load_data();
+    ;; if (collections.dict_empty?()) {
+    ;;     throw(0xffff);
+    ;; };
+    slice res = wallet_address;
+    var factories = collections.begin_parse();
+    
+    while (factories.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
+        slice inner_address = factories~load_msg_addr(); ;; load cell from slice msg
+        if (inner_address.slice_hash() == wallet_address.slice_hash()) {
+            res = inner_address;
+        }
+    };
+    return res;
+    ;; return owner_address;
+}

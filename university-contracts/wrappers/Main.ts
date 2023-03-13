@@ -88,10 +88,11 @@ export class Main implements Contract {
     }
 
     async getWalletFactoryAddress(provider: ContractProvider, wallet: Address) {
-        const result = await provider.get('get_wallet_factory_address', wallet);
-        console.log({result})
-        console.log(result.stack)
-        console.log(result.stack.readAddress())
+        const walletCell = beginCell().storeAddress(wallet).endCell();
+        const result = await provider.get('get_wallet_factory_address', [{
+            type: 'slice',
+            cell: walletCell
+        }]);
         return result.stack.readAddress()
     }
 }

@@ -14,7 +14,7 @@ export function mainConfigToCell(config: MainConfig): Cell {
 
 export const Opcodes = {
     transfer_ownership: 0x2da38aaf,
-    create_collection: 42,
+    create_factory: 42,
 };
 
 export class Main implements Contract {
@@ -38,7 +38,7 @@ export class Main implements Contract {
         });
     }
 
-    async sendCreateCollection(
+    async sendCreateFactory(
         provider: ContractProvider,
         via: Sender,
         opts: {
@@ -50,7 +50,7 @@ export class Main implements Contract {
             value: opts.value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell()
-                .storeUint(Opcodes.create_collection, 32)
+                .storeUint(Opcodes.create_factory, 32)
                 .storeUint(opts.queryID ?? 0, 64)
                 .endCell(),
         });

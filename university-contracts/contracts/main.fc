@@ -3,7 +3,7 @@
 
 ;; op codes
 const op::transfer_ownership = 0x2da38aaf;
-const op::create_collection = 42;
+const op::create_factory = 42;
 
 ;; error codes
 const error::access_denied = 102;
@@ -57,9 +57,15 @@ global cell factory_code;
         return ();
     }
 
-    if (op == op::create_collection) {
-        ;; create user factory
-        save_data();
+    if (op == op::create_factory) {
+        cell state_init = calculate_factory_state_init(sender_address, factory_code);
+        slice new_factory_address = calculate_factory_address(state_init);
+        var msg = begin_cell()
+            .store_uint(0x18, 6)
+            .store_slice(sender_address)
+            .store_uint(4 + 2 + 1, 1 + 4 + 4 + 64 + 32 + 1 + 1 + 1)
+            .store_ref(state_init);
+        send_raw_message(msg.end_cell(), 1); ;; pay transfer fees separately, revert on errors
         return ();
     }
 

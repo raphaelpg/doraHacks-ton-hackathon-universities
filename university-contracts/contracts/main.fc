@@ -12,6 +12,7 @@ const error::access_denied = 102;
 global slice owner_address;
 global slice last_sender_address;
 global cell collections;
+global cell factory_code;
 
 ;; load_data populates storage variables using stored data
 () load_data() impure {
@@ -20,6 +21,7 @@ global cell collections;
     owner_address = ds~load_msg_addr();
     last_sender_address = ds~load_msg_addr();
     ;; collections = ds~load_dict();
+    factory_code = ds~load_ref();
 
     ds.end_parse();
 }
@@ -31,6 +33,7 @@ global cell collections;
             .store_slice(owner_address)
             .store_slice(last_sender_address)
             ;; .store_dict(collections)
+            .store_ref(factory_code)
             .end_cell()
     );
 }
@@ -116,12 +119,12 @@ slice get_last_sender_address() method_id {
 
 ;; retrieve cell from dictionary
 ;; givin an address as a parameter, return the factory address  (owner_address)
-slice get_wallet_factory_address(slice wallet_address) method_id {
-    load_data();
-    (int wchain, int address_A) = parse_std_addr(wallet_address);
-    (slice factory, int success) = collections.udict_get?(256, address_A);
-    if (collections.dict_empty?()) {
-        throw(0xffff); 
-    };
-    return factory;
-}
+;; slice get_wallet_factory_address(slice wallet_address) method_id {
+;;     load_data();
+;;     (int wchain, int address_A) = parse_std_addr(wallet_address);
+;;     (slice factory, int success) = collections.udict_get?(256, address_A);
+;;     if (collections.dict_empty?()) {
+;;         throw(0xffff); 
+;;     };
+;;     return factory;
+;; }

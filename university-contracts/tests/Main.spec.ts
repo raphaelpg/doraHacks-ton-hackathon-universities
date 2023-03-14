@@ -7,9 +7,11 @@ import { randomAddress } from './helpers';
 
 describe('Main', () => {
     let code: Cell;
+    let factoryCode: Cell;
 
     beforeAll(async () => {
         code = await compile('Main');
+        factoryCode = await compile('collectionFactory');
     });
 
     let blockchain: Blockchain;
@@ -26,6 +28,7 @@ describe('Main', () => {
                 {
                     owner_address: deployer.address,
                     last_sender_address: deployer.address,
+                    factory_code: factoryCode,
                 },
                 code
             )
@@ -80,16 +83,16 @@ describe('Main', () => {
         expect(lastSenderBefore.equals(lastSenderAfter)).toEqual(false);
     });
 
-    it("should retrieve user's factory", async () => {
-        const newSender = await blockchain.treasury('newUser');
-        await main.sendCreateCollection(newSender.getSender(), {
-            value: toNano('0.05'),
-        });
+    // it("should retrieve user's factory", async () => {
+    //     const newSender = await blockchain.treasury('newUser');
+    //     await main.sendCreateCollection(newSender.getSender(), {
+    //         value: toNano('0.05'),
+    //     });
 
-        const userFactory = await main.getWalletFactoryAddress(newSender.address);
+    //     const userFactory = await main.getWalletFactoryAddress(newSender.address);
 
-        console.log({userFactory})
-        // console.log({deployerAddress})
-        // expect(lastSender.equals(deployerAddress)).toEqual(true);
-    })
+    //     console.log({userFactory})
+    //     // console.log({deployerAddress})
+    //     // expect(lastSender.equals(deployerAddress)).toEqual(true);
+    // })
 });

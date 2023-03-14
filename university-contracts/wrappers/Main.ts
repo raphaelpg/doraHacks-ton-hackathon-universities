@@ -3,12 +3,14 @@ import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, 
 export type MainConfig = {
     owner_address: Address;
     last_sender_address: Address;
+    factory_code: Cell;
 };
 
 export function mainConfigToCell(config: MainConfig): Cell {
     return beginCell()
         .storeAddress(config.owner_address)
         .storeAddress(config.last_sender_address)
+        .storeRef(config.factory_code)
         .endCell();
 }
 

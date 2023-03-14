@@ -1,0 +1,27 @@
+cell pack_factory_data(slice owner_address, cell factory_code) inline {
+   return  begin_cell()
+            .store_slice(owner_address)
+            .store_ref(factory_code)
+           .end_cell();
+}
+
+cell calculate_factory_state_init(slice owner_address, cell factory_code) inline {
+  return begin_cell()
+          .store_uint(0, 2)
+          .store_dict(factory_code)
+          .store_dict(pack_factory_data(owner_address, factory_code))
+          .store_uint(0, 1)
+         .end_cell();
+}
+
+slice calculate_factory_address(cell state_init) inline {
+  return begin_cell().store_uint(4, 3)
+                     .store_int(workchain(), 8)
+                     .store_uint(cell_hash(state_init), 256)
+                     .end_cell()
+                     .begin_parse();
+}
+
+slice calculate_user_factory_address(slice owner_address, cell factory_code) inline {
+  return calculate_factory_address(calculate_factory_state_init(owner_address, factory_code));
+}

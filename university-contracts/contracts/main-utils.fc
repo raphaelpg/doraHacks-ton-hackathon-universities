@@ -1,3 +1,6 @@
+;; this code is a simplified version of the code used in the Jetton smart contracts here:
+;; https://github.com/ton-blockchain/token-contract/blob/main/ft/jetton-utils.fc
+
 cell pack_factory_data(slice owner_address, cell factory_code) inline {
    return  begin_cell()
             .store_slice(owner_address)

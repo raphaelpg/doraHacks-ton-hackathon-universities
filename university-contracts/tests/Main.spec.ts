@@ -27,7 +27,6 @@ describe('Main', () => {
             Main.createFromConfig(
                 {
                     owner_address: deployer.address,
-                    last_sender_address: deployer.address,
                     factory_code: factoryCode,
                 },
                 code
@@ -57,42 +56,15 @@ describe('Main', () => {
         expect(owner.equals(deployerAddress)).toEqual(true);
     })
 
-    it('should retrieve last sender address and it should be the deployer', async () => {
-        const lastSender = await main.getLastSender();
+    it("should retrieve user's factory", async () => {
+        const newSender = await blockchain.treasury('newUser');
 
-        console.log({lastSender})
-        console.log({deployerAddress})
-        expect(lastSender.equals(deployerAddress)).toEqual(true);
+        console.log('newSender', newSender.address);
+
+        const userFactory = await main.getWalletFactoryAddress(newSender.address);
+
+        console.log({userFactory})
+        // console.log({deployerAddress})
+        // expect(lastSender.equals(deployerAddress)).toEqual(true);
     })
-
-    it('should change last sender', async () => {
-        const newSender = await blockchain.treasury('newSender');
-
-        const lastSenderBefore = await main.getLastSender();
-
-        console.log('lastSenderBefore', lastSenderBefore);
-
-        await main.sendCreateCollection(newSender.getSender(), {
-            value: toNano('0.05'),
-        });
-
-        const lastSenderAfter = await main.getLastSender();
-
-        console.log('lastSenderAfter', lastSenderAfter);
-
-        expect(lastSenderBefore.equals(lastSenderAfter)).toEqual(false);
-    });
-
-    // it("should retrieve user's factory", async () => {
-    //     const newSender = await blockchain.treasury('newUser');
-    //     await main.sendCreateCollection(newSender.getSender(), {
-    //         value: toNano('0.05'),
-    //     });
-
-    //     const userFactory = await main.getWalletFactoryAddress(newSender.address);
-
-    //     console.log({userFactory})
-    //     // console.log({deployerAddress})
-    //     // expect(lastSender.equals(deployerAddress)).toEqual(true);
-    // })
 });

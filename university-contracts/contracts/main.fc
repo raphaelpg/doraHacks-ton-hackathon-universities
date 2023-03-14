@@ -1,4 +1,5 @@
 #include "imports/stdlib.fc";
+#include "main-utils.fc";
 
 const op::transfer_ownership = 0x2da38aaf;
 const op::create_collection = 42;
@@ -10,20 +11,15 @@ const error::access_denied = 102;
 ;; id is required to be able to create different instances of counters
 ;; since addresses in TON depend on the initial state of the contract
 global slice owner_address;
-global slice last_sender_address;
-global cell collections;
 global cell factory_code;
 
 ;; load_data populates storage variables using stored data
-() load_data() impure {
+(slice, cell) load_data() impure {
     var ds = get_data().begin_parse();
-
-    owner_address = ds~load_msg_addr();
-    last_sender_address = ds~load_msg_addr();
-    ;; collections = ds~load_dict();
-    factory_code = ds~load_ref();
-
-    ds.end_parse();
+    return (
+        ds~load_msg_addr(), ;; owner_address = 
+        ds~load_ref() ;; factory_code = 
+    );
 }
 
 ;; save_data stores storage variables as a cell into persistent storage
@@ -31,8 +27,6 @@ global cell factory_code;
     set_data(
         begin_cell()
             .store_slice(owner_address)
-            .store_slice(last_sender_address)
-            ;; .store_dict(collections)
             .store_ref(factory_code)
             .end_cell()
     );
@@ -65,14 +59,7 @@ global cell factory_code;
     }
 
     if (op == op::create_collection) {
-        last_sender_address = sender_address;
-        ;; collections~udict_set(dict,key_len,index,value)
-        cell dic = new_dict();
-        (int wchain, int address_A) = parse_std_addr(sender_address);
-        ;; int address_B = parse_std_addr(owner_address);
-        ;; dic~dict_set(256, sender_address, owner_address);
-        dic~udict_set(256, address_A, owner_address);
-        collections = dic;
+        ;; create user factory
         save_data();
         return ();
     }
@@ -85,46 +72,12 @@ global cell factory_code;
 ;; note that unlike in many other smart contract VMs, get methods cannot be called by other contracts
 
 slice get_owner_address() method_id {
-    load_data();
+    (slice owner_address, cell factory_code) = load_data();
     return owner_address;
 }
 
-slice get_last_sender_address() method_id {
-    load_data();
-    return last_sender_address;
+;; retrieve factory address giving a wallet address parameter
+slice get_wallet_factory_address(slice wallet_address) method_id {
+    (slice owner_address, cell factory_code) = load_data();
+    return calculate_user_factory_address(wallet_address, factory_code);
 }
-
-;; slice get_wallet_factory_address(slice wallet_address) method_id {
-;;     load_data();
-;;     (slice factory, int success) = collections.dict_get?(256, wallet_address);
-;;     if (collections.dict_empty?()) {
-;;         throw(0xffff); 
-;;     };
-;;     slice res = wallet_address;
-;;     (int wchain, int address_A) = parse_std_addr(wallet_address);
-;;     ;; cell factories = collections.begin_parse();
-;;     ;; retrieve cell from dictionary
-;;     (slice payload, int success) = collections.udict_get?(256, address_A); ;; load cell from slice msg
-;;     throw_unless(98, success);
-;;     slice res = payload~load_msg_addr();    
-;;     ;; while (factories.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
-;;     ;;     slice inner_address = factories~load_msg_addr(); ;; load cell from slice msg
-;;     ;;     if (inner_address.slice_hash() == wallet_address.slice_hash()) {
-;;     ;;         res = inner_address;
-;;     ;;     }
-;;     ;; };
-;;     return res;
-;;     ;; return owner_address;
-;; }
-
-;; retrieve cell from dictionary
-;; givin an address as a parameter, return the factory address  (owner_address)
-;; slice get_wallet_factory_address(slice wallet_address) method_id {
-;;     load_data();
-;;     (int wchain, int address_A) = parse_std_addr(wallet_address);
-;;     (slice factory, int success) = collections.udict_get?(256, address_A);
-;;     if (collections.dict_empty?()) {
-;;         throw(0xffff); 
-;;     };
-;;     return factory;
-;; }

@@ -16,7 +16,7 @@ cell calculate_factory_state_init(slice owner_address, cell factory_code) inline
 
 slice calculate_factory_address(cell state_init) inline {
   return begin_cell().store_uint(4, 3)
-                     .store_int(workchain(), 8)
+                     .store_int(0, 8) ;; workchain 0
                      .store_uint(cell_hash(state_init), 256)
                      .end_cell()
                      .begin_parse();
